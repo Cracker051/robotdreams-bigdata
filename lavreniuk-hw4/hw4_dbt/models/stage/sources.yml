@@ -1,0 +1,13 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: public
+    tables:
+      - name: female_players
+      - name: female_coaches
+      - name: female_teams
+      - name: male_players
+      - name: male_coaches
+      - name: male_teams
+

@@ -205,3 +205,7 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Big files
+lavreniuk-hw4/raw
+lavreniuk-hw4/hw4_dbt/seeds/

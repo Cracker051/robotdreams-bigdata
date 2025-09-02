@@ -1,0 +1,88 @@
+version: 2
+
+models:
+  - name: int_players_male
+    description: Male players preprocessed
+    columns:
+    - name: player_id
+      tests:
+        - unique
+        - not_null
+    - name: value_eur
+      tests:
+        - not_null
+    - name: wage_eur
+      tests:
+        - not_null
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "wage_eur <= value_eur"
+
+  - name: int_players_female
+    description: Female players preprocessed
+    columns:
+    - name: player_id
+      tests:
+        - unique
+        - not_null
+    - name: value_eur
+      tests:
+        - not_null
+    - name: wage_eur
+      tests:
+        - not_null
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "wage_eur <= value_eur"
+
+  - name: int_team_profiles_male
+    description: Male team profiles from raw players table
+    columns:
+      - name: club_id
+        tests:
+          - unique
+          - not_null
+      - name: league_id
+        tests:
+          - not_null
+      - name: avg_overall
+        tests:
+          - not_null
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "avg_overall between 40 and 100"
+    
+  - name: int_team_profiles_female
+    description: Female team profiles from raw players table
+    columns:
+      - name: club_id
+        tests:
+          - unique
+          - not_null
+      - name: league_id
+        tests:
+          - not_null
+      - name: avg_overall
+        tests:
+          - not_null
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "avg_overall between 40 and 100"
+
+  - name: int_league_insights_male
+    description: Aggregated male league profiles from players table and teams table
+    columns:
+      - name: has_talents
+        tests:
+          - not_null
+          - accepted_values:
+              values: [True, False]
+  
+  - name: int_league_insights_female
+    description: Aggregated female league profiles from players table and teams table
+    columns:
+      - name: has_talents
+        tests:
+          - not_null
+          - accepted_values:
+              values: [True, False]
