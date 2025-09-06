@@ -1,0 +1,28 @@
+  services:
+    kafka:
+      image: lensesio/fast-data-dev:3.9.0
+      hostname: kafka
+      environment:
+        ADV_HOST: kafka
+        RUNNING_SAMPLEDATA: 1
+        RUNTESTS: 0
+        # The next three variables are required if you want to have Kafka
+        # available at the host for local development. They are tailored to KRaft
+        # fast-data-dev (3.9.x or later). The broker will be available at localhost:9092.
+        KAFKA_LISTENERS: PLAINTEXT://:9092,DOCKERCOMPOSE://:19092,CONTROLLER://:16062
+        KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,DOCKERCOMPOSE://demo-kafka:19092
+        KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: >
+          DOCKERCOMPOSE:PLAINTEXT,CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,
+          SSL:SSL,SASL_PLAINTEXT:SASL_PLAINTEXT,SASL_SSL:SASL_SSL
+        # Makes things a little lighter
+        DISABLE: debezium-mongodb,debezium-mysql,debezium-postgres,debezium-sqlserver,debezium-jdbc
+      # These are the ports for Kafka and Schema Registry. You can disable them if
+      # you don't need to access Kafka from your host.
+      ports:
+        - 9092:9092
+        - 8081:8081
+        - 8083:8083
+        - 3030:3030
+      # Optional, to allow to resume work (persistence)
+      # volumes:
+      #   - kafka-data-volume:/data

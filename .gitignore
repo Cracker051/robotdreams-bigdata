@@ -205,3 +205,9 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Spark checkpoints and files
+*.crc
+*.delta
+lavreniuk-hw5/checkpoints/*
+lavreniuk-hw5/data/*
