@@ -1,0 +1,1 @@
+docker run -d -p 7432:5432 -e POSTGRES_PASSWORD=mysecretpassword --name hw4-psql postgres:17

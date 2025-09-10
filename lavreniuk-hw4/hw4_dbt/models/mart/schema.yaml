@@ -1,0 +1,9 @@
+models:
+  - name: mart_player_profiles_female
+    description: Analytic view with additional metrics for female players
+
+  - name: mart_player_profiles_femal
+    description: Analytic view with additional metrics for male players
+
+  - name: mart_team_dashboard
+    description: Analytic view for team based on merged table with all players
