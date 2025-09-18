@@ -211,3 +211,6 @@ __marimo__/
 *.delta
 lavreniuk-hw5/checkpoints/*
 lavreniuk-hw5/data/*
+# Big files
+lavreniuk-hw4/raw
+lavreniuk-hw4/hw4_dbt/seeds/
