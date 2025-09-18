@@ -206,6 +206,11 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
+# Spark checkpoints and files
+*.crc
+*.delta
+lavreniuk-hw5/checkpoints/*
+lavreniuk-hw5/data/*
 # Big files
 lavreniuk-hw4/raw
 lavreniuk-hw4/hw4_dbt/seeds/
