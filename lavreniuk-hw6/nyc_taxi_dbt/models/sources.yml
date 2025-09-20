@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: stage
+    schema: public
+    tables:
+      - name: green_taxi_stage
+      - name: yellow_taxi_stage
+      - name: taxi_lookup_zone_stage
+
