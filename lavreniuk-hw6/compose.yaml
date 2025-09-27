@@ -1,0 +1,134 @@
+services:
+  postgres:
+    image: postgres:15.3
+    ports:
+      - "8432:5432"
+    volumes:
+      - postgres-db-volume:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    healthcheck:
+      test:
+        - CMD
+        - pg_isready
+        - "-U"
+        - airflow
+      interval: 5s
+      retries: 5
+
+  airflow-init:
+    build: .
+    restart: on-failure
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./raw_data:/home/raw_data:ro
+      - ./req.txt:/requirements.txt
+
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__FERNET_KEY: ""
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__WEBSERVER__RBAC: "true"
+      AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: "true"
+      PIP_NO_CACHE_DIR: "true"
+    command:
+      - "-c"
+      - |
+        airflow db init
+        airflow users create \
+          --username admin \
+          --firstname Admin \
+          --lastname User \
+          --role Admin \
+          --email admin@example.com \
+          --password admin
+    entrypoint: /bin/bash
+    user: ${AIRFLOW_UID:-50000}:0
+
+  webserver:
+    build: .
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./raw_data:/home/raw_data:ro
+      - ./req.txt:/requirements.txt
+      - ./artifacts:/opt/spark/artifacts:ro
+      - ./unified_data/:/opt/spark/unified_data:ro
+      - ./nyc_taxi_dbt/:/opt/dbt/nyc_taxi_dbt
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "true"
+      AIRFLOW__CORE__FERNET_KEY: ""
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__WEBSERVER__RBAC: "true"
+      AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: "true"
+      PIP_NO_CACHE_DIR: "true"
+    command: webserver
+    user: ${AIRFLOW_UID:-50000}:0
+
+  scheduler:
+    build: .
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./req.txt:/requirements.txt
+      - ./raw_data:/home/raw_data:ro
+      - ./artifacts:/opt/spark/artifacts:ro
+      - ./unified_data/:/opt/spark/unified_data:ro
+      - ./nyc_taxi_dbt/:/opt/dbt/nyc_taxi_dbt
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__FERNET_KEY: ""
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__WEBSERVER__RBAC: "true"
+      AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: "true"
+      PIP_NO_CACHE_DIR: "true"
+    command: scheduler
+    user: ${AIRFLOW_UID:-50000}:0
+
+  airflow-cli:
+    build: .
+    restart: on-failure
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./raw_data:/home/raw_data:ro
+      - ./req.txt:/requirements.txt
+      - ./artifacts:/opt/spark/artifacts:ro
+      - ./unified_data/:/opt/spark/unified_data:ro
+      - ./nyc_taxi_dbt/:/opt/dbt/nyc_taxi_dbt
+    environment:
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    command:
+      - bash
+      - "-c"
+      - |
+        airflow connections add 'spark_conn' --conn-json '{"conn_type": "spark", "host": "local[*]"}'
+    user: ${AIRFLOW_UID:-50000}:0
+
+volumes:
+  postgres-db-volume: null
