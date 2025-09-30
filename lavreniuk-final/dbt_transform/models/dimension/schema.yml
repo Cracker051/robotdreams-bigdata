@@ -1,0 +1,23 @@
+models:
+  - name: dim_crime_type
+    columns:
+      - name: iucr_code
+        tests:
+          - unique
+          - not_null
+      - name: primary_description
+        tests:
+          - not_null
+
+  - name: dim_location
+    columns:
+      - name: location_key
+        tests:
+          - unique
+          - not_null
+      - name: latitude
+        tests:
+          - not_null
+      - name: longitude
+        tests:
+          - not_null

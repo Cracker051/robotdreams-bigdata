@@ -1,0 +1,45 @@
+models:
+  - name: stg_arrests
+    columns:
+      - name: arrest_id
+        tests:
+          - unique
+          - not_null
+      - name: charge_one_type
+        tests:
+          - accepted_values:
+                values: ['felony', 'misdemeanor', 'other']
+
+  - name: stg_crimes
+    columns:
+      - name: crime_id
+        tests:
+          - unique
+          - not_null
+      - name: crime_date
+        tests:
+          - not_null
+      - name: iucr_code
+        tests:
+          - not_null
+          - relationships:
+                to: ref('stg_ucr_codes')
+                field: iucr_code
+      - name: primary_type
+        tests:
+          - not_null
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "latitude BETWEEN 41.6 AND 42.1"
+      - dbt_utils.expression_is_true:
+          expression: "longitude BETWEEN -87.95 AND -87.5"
+
+  - name: stg_ucr_codes
+    columns:
+      - name: iucr_code
+        tests:
+          - unique
+          - not_null
+      - name: primary_description
+        tests:
+          - not_null
