@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: silver
+    schema: public
+    tables:
+      - name: silver_arrests
+      - name: silver_crimes
+      - name: silver_ucr_codes

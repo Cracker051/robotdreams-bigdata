@@ -1,0 +1,12 @@
+models:
+  - name: agg_daily_crimes
+    columns:
+      - name: crime_date
+        tests:
+          - not_null
+      - name: total_crimes
+        tests:
+          - not_null
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "total_crimes >= crimes_with_arrest"

@@ -215,6 +215,8 @@ lavreniuk-hw5/data/*
 # Big files
 lavreniuk-hw4/raw
 lavreniuk-hw4/hw4_dbt/seeds/
+lavreniuk-final/data
+lavreniuk-hw6/unified_data
 lavreniuk-hw6/raw_data
 
 # MacOS files
@@ -222,6 +224,7 @@ lavreniuk-hw6/raw_data
 
 # Logs
 lavreniuk-hw6/logs
+lavreniuk-final/logs
 
 # Debug PARQUET files
 _SUCCESS
